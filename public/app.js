@@ -283,15 +283,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (index === 0) eventBlock.classList.add('active-slide');
                         if (evt.completed) { eventBlock.style.textDecoration = 'line-through'; eventBlock.style.opacity = '0.5'; }
 
-                        /* ===================================================================
-                           🔥 FIX FORMAT JAM: Kaca Pembesar Lurus & Jam AM/PM Premium Terpasang!
-                           =================================================================== */
                         eventBlock.onclick = (e) => {
                             e.stopPropagation(); 
                             detailTitle.textContent = evt.title; 
-                            const d = new Date(evt.timestamp);
                             
-                            // Ekstraktor Konversi AM/PM Kinetik
+                            // 🔥 TEMBAKKAN DATA DETAILS KE MODALNYA KALO ADA
+                            const detailNotesText = document.getElementById('detail-notes');
+                            if (detailNotesText) {
+                                detailNotesText.textContent = evt.details || 'No additional details.';
+                            }
+
+                            const d = new Date(evt.timestamp);
                             const rawHour = d.getHours();
                             const ampm = rawHour >= 12 ? 'PM' : 'AM';
                             const displayHour = rawHour === 0 ? 12 : (rawHour > 12 ? rawHour - 12 : rawHour);
@@ -346,8 +348,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     saveEventBtn.onclick = () => {
         const title = eventTitleInput.value.trim();
+        const details = document.getElementById('event-details').value.trim(); // 🔥 Ambil isi textarea
         if (title && clickedSlotData) {
-            const eventData = { title, color: selectedColor, completed: false, timestamp: clickedSlotData.timestamp };
+            // 🔥 Selipkan data 'details' ke dalam objek eventData
+            const eventData = { title, details: details || 'No additional details.', color: selectedColor, completed: false, timestamp: clickedSlotData.timestamp };
             events.push(eventData); saveEvents(); renderAll();
             eventTitleInput.value = ''; document.getElementById('event-details').value = ''; eventModal.style.display = 'none';
         }
@@ -358,9 +362,87 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { grid.style.transform = 'translateX(0)'; grid.style.opacity = '1'; }, 150);
     }
 
+    // ===================================================================
+    // 🎯 SMART VIBE CHECK / MOOD ANALYTICS ENGINE (BALANCED & FIXED)
+    // ===================================================================
+    function updateVibeAnalytics() {
+        const vibeRing = document.querySelector('.vibe-progress-ring');
+        const vibePercentText = document.getElementById('vibe-percentage');
+        const vibeStatusText = document.getElementById('vibe-status');
+        const vibeDescText = document.getElementById('vibe-desc');
+        const activeUser = localStorage.getItem('promptcal_user') || 'User';
+
+        if (!vibeRing || !events.length) {
+            if(vibeStatusText) vibeStatusText.textContent = "Chill Mode 😎";
+            if(vibeDescText) vibeDescText.textContent = "No tasks, full cozy vibe.";
+            if(vibePercentText) vibePercentText.textContent = "100%";
+            if(vibeRing) vibeRing.style.background = `conic-gradient(#81c995 100%, var(--bg-card) 0%)`;
+            return;
+        }
+
+        const startOfWeek = new Date(currentDate);
+        startOfWeek.setDate(currentDate.getDate() - currentDate.getDay());
+        startOfWeek.setHours(0,0,0,0);
+        
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6);
+        endOfWeek.setHours(23,59,59,999);
+
+        const weeklyEvents = events.filter(e => e.timestamp >= startOfWeek.getTime() && e.timestamp <= endOfWeek.getTime());
+
+        if (weeklyEvents.length === 0) {
+            vibeStatusText.textContent = "Chill Mode 😎";
+            vibeDescText.textContent = "Clear schedule this week.";
+            vibePercentText.textContent = "100%";
+            vibeRing.style.background = `conic-gradient(#81c995 100%, var(--bg-card) 0%)`;
+            return;
+        }
+
+        let uncompletedCount = 0;
+        let stressWeight = 0;
+        let purpleBonusPoints = 0; // Wadah penyimpan bonus kebahagiaan
+
+        weeklyEvents.forEach(e => {
+            if (e.completed) return; 
+            uncompletedCount++;
+            if (e.color === '#f28b82') stressWeight += 25;      // Merah ngurangin 25%
+            else if (e.color === '#f7cb4d') stressWeight += 15; // Kuning ngurangin 15%
+            else if (e.color === '#bb86fc') purpleBonusPoints += 15; // 🔥 UNGU MENAMBAH +15% VIBE!
+            else stressWeight += 8;                             // Biru/Hijau cuma 8%
+        });
+
+        // Hitung skor akhir dan kombinasikan dengan bonus ungu (Maksimal 100%)
+        let goodVibePercentage = 100;
+        if (uncompletedCount > 0) {
+            let baseVibe = 100 - stressWeight;
+            goodVibePercentage = Math.min(100, Math.max(0, baseVibe + purpleBonusPoints));
+        }
+
+        vibePercentText.textContent = `${goodVibePercentage}%`;
+        
+        // Update warna ring visual secara adaptif
+        if (goodVibePercentage >= 75) {
+            vibeStatusText.textContent = "Chill & Productive 😎";
+            vibeStatusText.style.color = "#81c995";
+            vibeDescText.textContent = "Schedule is balanced perfectly.";
+            vibeRing.style.background = `conic-gradient(#81c995 ${goodVibePercentage}%, var(--bg-card) 0%)`;
+        } else if (goodVibePercentage >= 45) {
+            vibeStatusText.textContent = "Steady Grind ☕";
+            vibeStatusText.style.color = "#f7cb4d";
+            vibeDescText.textContent = `Keep rolling, ${activeUser}! You got this.`;
+            vibeRing.style.background = `conic-gradient(#f7cb4d ${goodVibePercentage}%, var(--bg-card) 0%)`;
+        } else {
+            vibeStatusText.textContent = "Overloaded Stressed 🥵";
+            vibeStatusText.style.color = "#f28b82";
+            vibeDescText.textContent = "Too many active tasks! Take a break.";
+            vibeRing.style.background = `conic-gradient(#f28b82 ${goodVibePercentage}%, var(--bg-card) 0%)`;
+        }
+    }
+
     function renderAll() { 
         if (localStorage.getItem('promptcal_user')) {
             renderMiniCalendar(); renderMainGrid(); renderEventsList(); animateTransition(); 
+            updateVibeAnalytics(); 
         }
     }
 
@@ -408,12 +490,47 @@ document.addEventListener('DOMContentLoaded', () => {
                 const targetDate = new Date(year, month - 1, day);
                 targetDate.setHours(aiResult.hour, 0, 0, 0);
 
-                const newEvent = { title: aiResult.title, color: aiResult.color, completed: false, timestamp: targetDate.getTime() };
-                events.push(newEvent); saveEvents();
+                // 🔥 LOGIC DETEKSI WARNA OTOMATIS BERDASARKAN KEYWORD PROMPT USER
+                const lowerPrompt = promptText.toLowerCase();
+                let finalColor = aiResult.color || '#8ab4f8'; // Default biru kalau AI bimbang
+
+                // 1. Cek Vibe Merah (Stres/Berat)
+                if (/exam|deadline|test|urgent|heavy|hard|ujian|tugas|penting|parah|susah/.test(lowerPrompt)) {
+                    finalColor = '#f28b82';
+                } 
+                // 2. Cek Vibe Kuning (Medium)
+                else if (/meeting|review|homework|study|project|rapat|belajar|kerjaan|pr/.test(lowerPrompt)) {
+                    finalColor = '#f7cb4d';
+                } 
+                // 3. Cek Vibe Ungu (🔮 HAPPY REWARD +15%)
+                else if (/game|gacha|genshin|birthday|healing|party|main|ultah|pesta|libur|hepi/.test(lowerPrompt)) {
+                    finalColor = '#bb86fc';
+                } 
+                // 4. Cek Vibe Hijau (Cozy/Relax)
+                else if (/sleep|relax|chill|rest|movie|dinner|santai|tidur|istirahat|nonton|makan/.test(lowerPrompt)) {
+                    finalColor = '#81c995';
+                }
+                // 5. Cek Vibe Biru (Routine)
+                else if (/routine|class|lecture|workout|gym|kuliah|sekolah|olahraga|biasa/.test(lowerPrompt)) {
+                    finalColor = '#8ab4f8';
+                }
+
+                // Masukkan data event baru dengan warna 'finalColor' yang sudah dipetakan
+                const newEvent = { 
+                    title: aiResult.title, 
+                    color: finalColor, // <--- Warna pintar terpasang!
+                    completed: false, 
+                    timestamp: targetDate.getTime(),
+                    details: aiResult.details || "Generated via Intelligent Prompt."
+                };
+                
+                events.push(newEvent); 
+                saveEvents();
 
                 currentDate = targetDate;
                 renderAll();
-                promptInput.value = ''; promptPanel.style.display = 'none';
+                promptInput.value = ''; 
+                promptPanel.style.display = 'none';
             }
         })
         .catch(err => {
