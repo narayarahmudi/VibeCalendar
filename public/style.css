@@ -261,14 +261,44 @@ body {
 /* Mobile Burger Trigger Button */
 .mobile-toggle-btn { display: none; position: fixed; bottom: 24px; right: 24px; z-index: 3000; background-color: var(--accent-color); color: #1a1b1e; border: none; padding: 14px 24px; border-radius: 30px; font-weight: 700; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); cursor: pointer; }
 
-/* Responsive Mobile Engine */
+/* Responsive Mobile Engine (FIXED ANTI-NONGOL STANDBY COK!) */
 @media screen and (max-width: 768px) {
     .calendar-app { padding: 8px; gap: 0; flex-direction: column; }
     .mobile-toggle-btn { display: block !important; }
-    .sidebar { position: fixed; top: 0; left: -300px; height: 100vh; width: 280px; z-index: 4000; border-radius: 0; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-    .sidebar.mobile-open { left: 0 !important; }
-    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 3500; }
+    
+    /* 🛠️ Sembunyiin paksa lebih jauh keluar layar (-320px) biar gak ada sisa bayangan standby */
+    .sidebar { 
+        position: fixed !important; 
+        top: 0 !important; 
+        left: -320px !important; 
+        height: 100vh !important; 
+        width: 280px !important; 
+        z-index: 9999 !important; 
+        border-radius: 0 !important; 
+        box-shadow: none !important;
+        transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; 
+    }
+    
+    /* 🔥 Pas aktif, tembak ke koordinat 0 pas di mepet layar kiri */
+    .sidebar.mobile-open { 
+        left: 0 !important; 
+        box-shadow: 5px 0 25px rgba(0, 0, 0, 0.5) !important;
+    }
+    
+    /* Overlay background blur item pas menu keluar */
+    .sidebar-overlay { 
+        display: none; 
+        position: fixed; 
+        top: 0; 
+        left: 0; 
+        width: 100vw; 
+        height: 100vh; 
+        background: rgba(0,0,0,0.6); 
+        backdrop-filter: blur(4px); 
+        z-index: 9998; 
+    }
     .sidebar-overlay.mobile-open { display: block !important; }
+    
     .main-calendar-header { padding: 12px; height: auto; flex-wrap: wrap; gap: 10px; justify-content: center; }
     .calendar-navigation h2 { font-size: 16px; text-align: center; min-width: auto; }
     .header-search-container { order: 3; width: 100% !important; max-width: 100% !important; margin-left: 0 !important; margin-right: 0 !important; }
@@ -303,20 +333,18 @@ body {
     transition: opacity 0.2s ease;
 }
 
-/* Efek nyala tipis pas di-hover cursor */
 .creator-watermark:hover {
     opacity: 0.8;
 }
 
 .creator-watermark span {
     font-weight: 700;
-    color: var(--accent-color); /* Pake warna biru neon khas lu */
+    color: var(--accent-color); 
 }
 
 /* ===================================================================
    🎠 INTERACTIVE EVENT SLIDER CAROUSEL SYSTEM (FIX TOMBOL PANAH SLOT)
    =================================================================== */
-/* Container utama di dalam slot jam */
 .event-slider-container {
     position: relative !important;
     width: 100% !important;
@@ -326,7 +354,6 @@ body {
     align-items: center !important;
 }
 
-/* Sembunyikan semua event secara default di dalam slider slot */
 .event-slider-container .event-item {
     display: none !important;
     width: 100% !important;
@@ -334,13 +361,11 @@ body {
     box-sizing: border-box !important;
 }
 
-/* 🔥 SAKLAR SAKTI: Hanya tampilkan event yang punya kelas active-slide */
 .event-slider-container .event-item.active-slide {
     display: block !important;
     animation: slideFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* Tombol navigasi panah mini (‹ dan ›) */
 .slide-btn {
     position: absolute !important;
     top: 50% !important;
@@ -356,13 +381,12 @@ body {
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
-    opacity: 0 !important; /* Ngumpet dulu, baru muncul pas slot di-hover */
+    opacity: 0 !important; 
     transition: opacity 0.2s ease, background 0.2s ease !important;
     z-index: 10 !important;
     user-select: none !important;
 }
 
-/* Munculkan tombol panah pas kursor masuk ke dalam slot jam */
 .time-slot:hover .slide-btn {
     opacity: 1 !important;
 }
@@ -375,7 +399,6 @@ body {
 .prev-btn { left: 2px !important; }
 .next-btn { right: 2px !important; }
 
-/* Animasi transisi geser smooth pas tombol diklik */
 @keyframes slideFadeIn {
     from { opacity: 0; transform: scale(0.95); }
     to { opacity: 1; transform: scale(1); }
