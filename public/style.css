@@ -260,42 +260,22 @@ body {
 
 /* Mobile Burger Trigger Button */
 /* 🔥 FIX TOMBOL ADD EVENT MOBILE: BIAR JADI BULAT MINIMALIS ANTI-BEGAL LAYAR */
-.mobile-toggle-btn { 
-    display: none; /* Sembunyi di desktop */
-    position: fixed !important; 
-    bottom: 24px !important; 
-    right: 24px !important; 
-    z-index: 9999 !important; 
-    background-color: var(--accent-color) !important; 
-    color: #1a1b1e !important; 
-    border: none !important; 
-    
-    /* Set ukuran bulat sempurna */
-    width: 56px !important; 
-    height: 56px !important; 
-    padding: 0 !important; 
-    border-radius: 50% !important; 
-    
-    /* 🔥 PENGATUR HURUF: Biar teks ga meledak keluar/jelek */
-    font-size: 21px !important; 
-    font-weight: 700 !important; 
-    text-transform: uppercase !important;
-    letter-spacing: 0.5px !important;
-    
-    /* Paksa teks/ikon tepat berada di tengah bulatan */
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.5) !important; 
-    cursor: pointer !important; 
-}
+/* Mobile Burger Trigger Button */
+.mobile-toggle-btn { display: none; position: fixed; bottom: 24px; right: 24px; z-index: 3000; background-color: #e0e4e8; border: none; padding: 1.6em 1.6em; border-radius: 50%; box-shadow: 0px 5px rgba(0, 0, 0, 0.131);}
 
 /* Responsive Mobile Engine (FIXED ANTI-NONGOL STANDBY COK!) */
 @media screen and (max-width: 768px) {
     .calendar-app { padding: 8px; gap: 0; flex-direction: column; }
     
     /* 🔥 Aktifkan tombol bulat pas di HP */
-    .mobile-toggle-btn { display: flex !important; }
+    /* ===================================================================
+   📱 FAB MOBILE TOGGLE BUTTON (BULAT MINIMALIS PREMIUM)
+   =================================================================== */
+.mobile-toggle-btn { 
+    display: none; 
+    
+    display: flex !important; /* <--- NAH, INI DIA BANGSATNYA NYELIP DI SINI! */
+}
     
     /* 🛠️ Sembunyiin paksa lebih jauh keluar layar (-320px) biar gak ada sisa bayangan standby */
     .sidebar { 
