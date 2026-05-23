@@ -267,6 +267,7 @@ body {
     .mobile-toggle-btn { display: block !important; }
     
     /* 🛠️ Sembunyiin paksa lebih jauh keluar layar (-320px) biar gak ada sisa bayangan standby */
+    /* 🛠️ Sembunyiin paksa lebih jauh keluar layar (-320px) biar gak ada sisa bayangan standby */
     .sidebar { 
         position: fixed !important; 
         top: 0 !important; 
@@ -277,6 +278,10 @@ body {
         border-radius: 0 !important; 
         box-shadow: none !important;
         transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; 
+        
+        /* 🔥 SAKLAR SAKTI BIAR BISA DI-SCROLL DI HP, COK! */
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important; /* Efek scroll kenyal smooth di iOS/Android */
     }
     
     /* 🔥 Pas aktif, tembak ke koordinat 0 pas di mepet layar kiri */
