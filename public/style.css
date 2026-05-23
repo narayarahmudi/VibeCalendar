@@ -268,6 +268,7 @@ body {
     
     /* 🛠️ Sembunyiin paksa lebih jauh keluar layar (-320px) biar gak ada sisa bayangan standby */
     /* 🛠️ Sembunyiin paksa lebih jauh keluar layar (-320px) biar gak ada sisa bayangan standby */
+    /* 🛠️ Sembunyiin paksa lebih jauh keluar layar (-320px) biar gak ada sisa bayangan standby */
     .sidebar { 
         position: fixed !important; 
         top: 0 !important; 
@@ -279,9 +280,13 @@ body {
         box-shadow: none !important;
         transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important; 
         
-        /* 🔥 SAKLAR SAKTI BIAR BISA DI-SCROLL DI HP, COK! */
+        /* Saklar scroll kemarin */
         overflow-y: auto !important;
-        -webkit-overflow-scrolling: touch !important; /* Efek scroll kenyal smooth di iOS/Android */
+        -webkit-overflow-scrolling: touch !important; 
+        
+        /* 🔥 SAKLAR PENGAMAN: Kasih sisa ruang di pantat sidebar biar toggle theme & watermark gak tenggelam */
+        padding-bottom: 80px !important;
+        box-sizing: border-box !important;
     }
     
     /* 🔥 Pas aktif, tembak ke koordinat 0 pas di mepet layar kiri */
