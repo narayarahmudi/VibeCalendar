@@ -375,7 +375,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeUser = localStorage.getItem('promptcal_user') || 'User';
 
         if (!vibeRing || !events.length) {
-            if(vibeStatusText) vibeStatusText.textContent = "Chill Mode 😎";
+            if(vibeStatusText) vibeStatusText.textContent = "Chill Mode";
             if(vibeDescText) vibeDescText.textContent = "No tasks, full cozy vibe.";
             if(vibePercentText) vibePercentText.textContent = "100%";
             if(vibeRing) vibeRing.style.background = `conic-gradient(#81c995 100%, var(--bg-card) 0%)`;
@@ -393,7 +393,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const weeklyEvents = events.filter(e => e.timestamp >= startOfWeek.getTime() && e.timestamp <= endOfWeek.getTime());
 
         if (weeklyEvents.length === 0) {
-            vibeStatusText.textContent = "Chill Mode 😎";
+            vibeStatusText.textContent = "Chill Mode";
             vibeDescText.textContent = "Clear schedule this week.";
             vibePercentText.textContent = "100%";
             vibeRing.style.background = `conic-gradient(#81c995 100%, var(--bg-card) 0%)`;
@@ -424,17 +424,17 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Update warna ring visual secara adaptif
         if (goodVibePercentage >= 75) {
-            vibeStatusText.textContent = "Chill & Productive 😎";
+            vibeStatusText.textContent = "Chill & Productive";
             vibeStatusText.style.color = "#81c995";
             vibeDescText.textContent = "Schedule is balanced perfectly.";
             vibeRing.style.background = `conic-gradient(#81c995 ${goodVibePercentage}%, var(--bg-card) 0%)`;
         } else if (goodVibePercentage >= 45) {
-            vibeStatusText.textContent = "Steady Grind ☕";
+            vibeStatusText.textContent = "Steady Grind";
             vibeStatusText.style.color = "#f7cb4d";
             vibeDescText.textContent = `Keep rolling, ${activeUser}! You got this.`;
             vibeRing.style.background = `conic-gradient(#f7cb4d ${goodVibePercentage}%, var(--bg-card) 0%)`;
         } else {
-            vibeStatusText.textContent = "Overloaded Stressed 🥵";
+            vibeStatusText.textContent = "Overloaded Stressed";
             vibeStatusText.style.color = "#f28b82";
             vibeDescText.textContent = "Too many active tasks! Take a break.";
             vibeRing.style.background = `conic-gradient(#f28b82 ${goodVibePercentage}%, var(--bg-card) 0%)`;

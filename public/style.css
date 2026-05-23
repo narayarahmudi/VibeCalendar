@@ -264,7 +264,31 @@ body {
 /* Responsive Mobile Engine (FIXED ANTI-NONGOL STANDBY COK!) */
 @media screen and (max-width: 768px) {
     .calendar-app { padding: 8px; gap: 0; flex-direction: column; }
-    .mobile-toggle-btn { display: block !important; }
+    /* .mobile-toggle-btn { display: block !important; } */
+    .mobile-toggle-btn { 
+        display: block !important; 
+        position: fixed !important; 
+        bottom: 24px !important; 
+        right: 24px !important; 
+        z-index: 9999 !important; /* Di atas segalanya */
+        background-color: var(--accent-color) !important; 
+        color: #1a1b1e !important; 
+        border: none !important; 
+        
+        /* Set ukuran pasti biar jadi bulat, gak full layar kanan-kiri */
+        width: 56px !important; 
+        height: 56px !important; 
+        padding: 0 !important; 
+        border-radius: 50% !important; /* Paksa bulat sempurna */
+        
+        font-size: 24px !important; /* Biar ikon + atau burgernya pas di tengah */
+        font-weight: 700 !important; 
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.5) !important; 
+        cursor: pointer !important; 
+    }
     
     /* 🛠️ Sembunyiin paksa lebih jauh keluar layar (-320px) biar gak ada sisa bayangan standby */
     /* 🛠️ Sembunyiin paksa lebih jauh keluar layar (-320px) biar gak ada sisa bayangan standby */
