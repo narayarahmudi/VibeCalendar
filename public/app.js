@@ -98,6 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if(sidebarOverlay) sidebarOverlay.onclick = toggleMobileSidebar;
 
     // Custom Context Menu Creation
+    // Custom Context Menu Creation (Ganti bagian ini dengan yang baru, Dav)
     const contextMenu = document.createElement('div');
     contextMenu.className = 'custom-context-menu';
     contextMenu.innerHTML = `
@@ -109,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="context-dot" data-color="#f28b82" style="background: #f28b82;"></div>
             <div class="context-dot" data-color="#f7cb4d" style="background: #f7cb4d;"></div>
             <div class="context-dot" data-color="#81c995" style="background: #81c995;"></div>
+            <div class="context-dot" data-color="#bb86fc" style="background: #bb86fc;"></div>
         </div>
     `;
     document.body.appendChild(contextMenu);
