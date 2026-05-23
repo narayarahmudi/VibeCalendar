@@ -283,9 +283,23 @@ document.addEventListener('DOMContentLoaded', () => {
                         if (index === 0) eventBlock.classList.add('active-slide');
                         if (evt.completed) { eventBlock.style.textDecoration = 'line-through'; eventBlock.style.opacity = '0.5'; }
 
+                        /* ===================================================================
+                           🔥 FIX FORMAT JAM: Kaca Pembesar Lurus & Jam AM/PM Premium Terpasang!
+                           =================================================================== */
                         eventBlock.onclick = (e) => {
-                            e.stopPropagation(); detailTitle.textContent = evt.title; const d = new Date(evt.timestamp);
-                            detailTime.textContent = `${d.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} - ${String(d.getHours()).padStart(2, '0')}:00`;
+                            e.stopPropagation(); 
+                            detailTitle.textContent = evt.title; 
+                            const d = new Date(evt.timestamp);
+                            
+                            // Ekstraktor Konversi AM/PM Kinetik
+                            const rawHour = d.getHours();
+                            const ampm = rawHour >= 12 ? 'PM' : 'AM';
+                            const displayHour = rawHour === 0 ? 12 : (rawHour > 12 ? rawHour - 12 : rawHour);
+                            const formattedTime = `${displayHour} ${ampm}`;
+
+                            const formattedDate = d.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                            detailTime.textContent = `${formattedDate} - ${formattedTime}`;
+                            
                             detailModal.style.display = 'block';
                         };
 
