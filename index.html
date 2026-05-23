@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>VibeCalendar - Smart Natural Language Calendar</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="welcome-screen" class="welcome-container">
+        <div class="welcome-card">
+            <div class="welcome-logo">VibeCalendar</div>
+            <h2>Welcome to Smart Calendar</h2>
+            <p>Please enter your name to personalize your dashboard</p>
+            <input type="text" id="username-input" placeholder="Your full name..." autocomplete="off">
+            <button id="login-btn">Get Started</button>
+        </div>
+    </div>
+
+    <div id="loading-screen" class="loading-container" style="display: none;">
+        <div class="spinner-box">
+            <div class="configure-border-1">  
+                <div class="configure-core"></div>
+            </div>
+            <div class="configure-border-2">  
+                <div class="configure-core"></div>
+            </div>
+            <p class="loading-text">Setting up your secure dashboard...</p>
+        </div>
+    </div>
+
+    <button id="mobile-sidebar-toggle" class="mobile-toggle-btn">☰ Menu</button>
+
+    <div class="calendar-app" id="main-app-layout" style="display: none;">
+        <div id="event-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Add Event</h2>
+                <input type="text" id="event-title" placeholder="Event Title">
+                <div class="color-picker">
+                    <label>Label Color:</label>
+                    <div class="colors">
+                        <span class="color-opt" data-color="#8ab4f8" style="background:#8ab4f8; border: 2px solid white;"></span>
+                        <span class="color-opt" data-color="#f28b82" style="background:#f28b82;"></span>
+                        <span class="color-opt" data-color="#f7cb4d" style="background:#f7cb4d;"></span>
+                        <span class="color-opt" data-color="#81c995" style="background:#81c995;"></span>
+                    </div>
+                </div>
+                <textarea id="event-details" placeholder="Add details..."></textarea>
+                <div class="modal-footer">
+                    <button id="save-event-btn">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="detail-modal" class="modal">
+            <div class="modal-content" style="text-align: center;">
+                <span class="close-detail-modal" style="position: absolute; right: 24px; top: 24px; font-size: 24px; color: var(--text-secondary); cursor: pointer;">&times;</span>
+                <h2 id="detail-title" style="margin-top: 10px; font-size: 22px; font-weight: 700; letter-spacing: -0.5px;">Nama Event</h2>
+                <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 18px 0;">
+                <p style="font-size: 12px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px;">⏰ Waktu Pelaksanaan</p>
+                <p id="detail-time" style="font-size: 15px; font-weight: 600; margin-top: 0; margin-bottom: 24px; color: var(--accent-color);">Jam Event</p>
+                <div class="modal-footer" style="justify-content: center; margin-top: 8px;">
+                    <button id="close-detail-btn" style="background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color); padding: 12px 32px; border-radius: 12px; font-weight: 700; cursor: pointer; transition: transform 0.2s;">Tutup</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="sidebar-overlay" class="sidebar-overlay"></div>
+        <aside class="sidebar" id="sidebar-panel">
+            <button class="create-event-button" id="create-event-button">+ Create</button>
+            
+            <div id="prompt-panel" style="display: none;">
+                <input type="text" id="prompt-input" placeholder="Try 'Dinner tomorrow at 7pm'">
+                <button id="submit-prompt">Add Event</button>
+            </div>
+            
+            <div class="mini-calendar-section">
+                <div id="mini-calendar"></div>
+            </div>
+            
+            <div class="my-calendars-section">
+                <h3>My calendars</h3>
+                <div class="user-session-wrapper" style="display: flex; align-items: center; justify-content: space-between; position: relative;">
+                    <label style="margin: 0;">
+                        <input type="checkbox" checked> <span id="display-user-name">User Session</span>
+                    </label>
+                    <button id="settings-toggle-btn" style="background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 14px; padding: 4px;">⚙️</button>
+                    
+                    <div id="settings-dropdown" class="settings-dropdown-content" style="display: none; position: absolute; right: 0; top: 28px; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 8px; z-index: 100; box-shadow: 0 4px 12px var(--shadow); width: 160px; padding: 4px 0;">
+                        <div id="reset-account-btn" style="padding: 8px 12px; font-size: 12px; color: #ff6b6b; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px;">❌ Reset Session</div>
+                    </div>
+                </div>
+                <label><input type="checkbox" checked> Birthdays</label>
+                <label><input type="checkbox" checked> Tasks</label>
+            </div>
+            
+            <div class="event-list-sidebar">
+                <h3>Events & Tasks</h3>
+                <ul id="event-list-container"></ul>
+            </div>
+            
+            <div class="theme-toggle-container">
+                <button id="theme-toggle">🌙 Dark Mode</button>
+            </div>
+        </aside>
+
+        <div class="main-content">
+            <header class="main-calendar-header">
+                <div class="calendar-navigation">
+                    <button id="today-button">Today</button>
+                    <button id="prev-week"><</button>
+                    <button id="next-week">></button>
+                    <h2 id="current-month-year">May 2026</h2>
+                </div>
+                
+                <div class="header-search-container">
+                    <div class="search-box-wrapper">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="search-events" placeholder="Search events...">
+                    </div>
+                </div>
+                
+                <div class="view-switcher">
+                    <button id="month-view-button">Month</button>
+                    <button id="week-view-button" class="active">Week</button>
+                    <button id="day-view-button">Day</button>
+                </div>
+            </header>
+            
+            <div class="calendar-time-grid-container">
+                <div class="time-column">
+                    <span>12 AM</span><span>1 AM</span><span>2 AM</span><span>3 AM</span><span>4 AM</span><span>5 AM</span>
+                    <span>6 AM</span><span>7 AM</span><span>8 AM</span><span>9 AM</span><span>10 AM</span><span>11 AM</span>
+                    <span>12 PM</span><span>1 PM</span><span>2 PM</span><span>3 PM</span><span>4 PM</span><span>5 PM</span>
+                    <span>6 PM</span><span>7 PM</span><span>8 PM</span><span>9 PM</span><span>10 PM</span><span>11 PM</span>
+                </div>
+                
+                <div class="calendar-main-grid" id="calendar-main-grid">
+                    <div class="calendar-weekdays-header">
+                        <span>Sun 17</span><span>Mon 18</span><span>Tue 19</span><span>Wed 20</span><span>Thu 21</span><span>Fri 22</span><span class="today">Sat 23</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="app.js"></script>
+</body>
+</html>

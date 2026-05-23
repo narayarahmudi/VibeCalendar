@@ -1,0 +1,202 @@
+/* Theme variables */
+:root {
+    --bg-app: #0f1013;
+    --bg-card: #16171b;
+    --bg-header: #1f2026;
+    --bg-input: #2a2b32;
+    --border-color: #2a2b32;
+    --text-primary: #f1f3f5;
+    --text-secondary: #9aa0a6;
+    --accent-color: #8ab4f8;
+    --shadow: rgba(0, 0, 0, 0.5);
+}
+
+[data-theme="light"] {
+    --bg-app: #f4f5f7;
+    --bg-card: #f8f9fa;
+    --bg-header: #f8f9fa;
+    --bg-input: #f1f3f4;
+    --border-color: #e0e4e8;
+    --text-primary: #202124;
+    --text-secondary: #5f6368;
+    --accent-color: #1a73e8;
+    --shadow: rgba(60, 64, 67, 0.15);
+}
+
+body, .sidebar, .main-content, .main-calendar-header, .time-column, .time-slot, button, input {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+body {
+    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    margin: 0; padding: 0;
+    background-color: var(--bg-app);
+    color: var(--text-primary);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+}
+
+/* ===================================================================
+   💎 WELCOME SCREEN & LOGIN ANIMATION STYLE
+   =================================================================== */
+.welcome-container {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: var(--bg-app); display: flex; align-items: center; justify-content: center; z-index: 9999;
+}
+.welcome-card {
+    background-color: var(--bg-card); padding: 40px; border-radius: 24px; width: 400px;
+    box-shadow: 0 20px 50px var(--shadow); border: 1px solid var(--border-color); text-align: center;
+    animation: modalSlideUp 0.4s ease-out;
+}
+.welcome-logo { font-size: 28px; font-weight: 800; color: var(--accent-color); margin-bottom: 16px; letter-spacing: -1px; }
+.welcome-card h2 { font-size: 22px; font-weight: 700; margin: 0 0 8px 0; }
+.welcome-card p { color: var(--text-secondary); font-size: 14px; margin: 0 0 24px 0; line-height: 1.5; }
+.welcome-card input {
+    width: 100%; background: var(--bg-input); border: 1px solid var(--border-color);
+    padding: 14px; border-radius: 12px; color: var(--text-primary); outline: none; font-size: 15px; margin-bottom: 20px; box-sizing: border-box;
+}
+.welcome-card input:focus { border-color: var(--accent-color); }
+#login-btn {
+    width: 100%; background: linear-gradient(135deg, var(--accent-color), #518ce6); color: #1a1b1e;
+    border: none; padding: 14px; border-radius: 12px; font-weight: 700; font-size: 15px; cursor: pointer; transition: transform 0.2s;
+}
+#login-btn:hover { transform: translateY(-2px); opacity: 0.95; }
+
+/* ===================================================================
+   💎 LOADING SPIN SPINNER KINETIK SYSTEM
+   =================================================================== */
+.loading-container {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background-color: var(--bg-app); display: flex; align-items: center; justify-content: center; z-index: 9998;
+}
+.spinner-box { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.configure-border-1, .configure-border-2 {
+    width: 115px; height: 115px; padding: 5px; position: absolute; display: flex; justify-content: center; align-items: center; background: #fb3b3b; animation: configure-xclock 3s ease-in-out infinite alternate;
+}
+.configure-border-1 { background: var(--accent-color); }
+.configure-border-2 { background: #518ce6; transform: rotate(45deg); animation: configure-xcounterclock 3s ease-in-out infinite alternate; }
+.configure-core { width: 100%; height: 100%; background-color: var(--bg-app); }
+.loading-text { margin-top: 140px; font-size: 14px; font-weight: 600; color: var(--text-secondary); letter-spacing: 0.5px; }
+
+@keyframes configure-xclock { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+@keyframes configure-xcounterclock { 0% { transform: rotate(45deg); } 100% { transform: rotate(-315deg); } }
+
+/* App Structure & Grids */
+.calendar-app { display: flex; width: 100%; height: 100%; padding: 16px; box-sizing: border-box; gap: 16px; }
+.sidebar { width: 280px; padding: 20px; background-color: var(--bg-card); border-radius: 16px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 4px 12px var(--shadow); flex-shrink: 0; }
+.create-event-button { background: linear-gradient(135deg, var(--accent-color), #518ce6); color: #1a1b1e; border: none; padding: 14px 28px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(138, 180, 248, 0.2); transition: transform 0.2s, opacity 0.2s; width: 100%; }
+[data-theme="light"] .create-event-button { color: #ffffff; }
+.create-event-button:hover { transform: translateY(-1px); opacity: 0.9; }
+
+.mini-calendar-container { padding: 8px; }
+.mini-calendar-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; font-size: 14px; font-weight: 600; }
+.mini-nav button { background: none; border: none; color: var(--text-primary); cursor: pointer; padding: 4px; font-weight: bold; }
+.mini-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.mini-grid span { font-size: 11px; font-weight: 600; color: var(--text-secondary); text-align: center; padding: 4px 0; }
+.mini-grid div { font-size: 12px; text-align: center; padding: 6px 0; cursor: pointer; border-radius: 8px; color: var(--text-primary); }
+.mini-grid div:hover { background-color: var(--bg-input); }
+
+.my-calendars-section h3, .event-list-sidebar h3 { font-size: 13px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; color: var(--text-secondary); margin-bottom: 12px; }
+.my-calendars-section label { display: flex; align-items: center; gap: 12px; padding: 6px 0; font-size: 14px; color: var(--text-primary); cursor: pointer; }
+
+.main-content { flex-grow: 1; display: flex; flex-direction: column; background-color: var(--bg-card); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px var(--shadow); }
+.main-calendar-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: var(--bg-header); border-bottom: 1px solid var(--border-color); }
+.calendar-navigation { display: flex; align-items: center; gap: 12px; }
+.calendar-navigation h2 { font-size: 20px; font-weight: 600; margin: 0 8px; color: var(--text-primary); min-width: 150px; }
+.calendar-navigation button { background-color: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; }
+.calendar-navigation button:hover { background-color: var(--border-color); }
+
+.view-switcher button { background-color: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color); padding: 8px 16px; cursor: pointer; font-weight: 500; }
+.view-switcher button:first-child { border-radius: 8px 0 0 8px; }
+.view-switcher button:last-child { border-radius: 0 8px 8px 0; }
+.view-switcher button.active { background-color: var(--accent-color); color: #1a1b1e; border-color: var(--accent-color); }
+
+.theme-toggle-container { margin-top: auto; }
+#theme-toggle { width: 100%; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color); padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 500; }
+
+.calendar-time-grid-container { display: flex; flex-grow: 1; overflow-y: auto; max-height: calc(100vh - 100px); background-color: var(--bg-card); position: relative; }
+.time-column { width: 75px; display: flex; flex-direction: column; background: var(--bg-card); box-sizing: border-box; border-right: 1px solid var(--border-color); padding-top: 50px; flex-shrink: 0; height: 1490px; }
+.time-column span { height: 60px; font-size: 11px; font-weight: 500; color: var(--text-secondary); text-align: right; padding-right: 12px; box-sizing: border-box; display: flex; align-items: flex-start; justify-content: flex-end; line-height: 1; }
+.calendar-main-grid { flex-grow: 1; display: flex; flex-direction: column; position: relative; width: calc(100% - 75px); }
+
+.calendar-weekdays-header { display: grid; height: 50px; background-color: var(--bg-header); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 10; box-sizing: border-box; width: 100%; }
+.calendar-weekdays-header span { display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 12px; color: var(--text-secondary); border-right: 1px solid var(--border-color); box-sizing: border-box; }
+.calendar-weekdays-header span.today { color: var(--accent-color); font-weight: bold; background-color: rgba(138, 180, 248, 0.05); }
+
+.time-grid-body { display: grid !important; grid-template-rows: repeat(24, 60px) !important; height: 1440px !important; width: 100% !important; box-sizing: border-box; background-color: var(--bg-card); }
+.time-slot { height: 60px !important; border-bottom: 1px solid var(--border-color); border-right: 1px solid var(--border-color); box-sizing: border-box; position: relative; padding: 0 !important; }
+.time-slot:hover { background-color: rgba(138, 180, 248, 0.04); }
+
+.event-slider-container { position: absolute; top: 2px; left: 4px; right: 4px; bottom: 2px; height: calc(100% - 4px); z-index: 5; }
+.event-item { position: absolute !important; top: 0; left: 0; right: 0; bottom: 0; width: 100%; height: 100%; border-radius: 8px; padding: 6px 28px; font-size: 11px; font-weight: 600; color: #1a1b1e !important; box-sizing: border-box; overflow: hidden !important; text-overflow: ellipsis !important; white-space: nowrap !important; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); border-left: 4px solid rgba(0, 0, 0, 0.15); z-index: 5; }
+.event-item.active-slide { display: block !important; }
+
+.slide-btn { position: absolute; top: 50%; transform: translateY(-50%); z-index: 10; background: rgba(0, 0, 0, 0.18); border: none; color: #1a1b1e; font-weight: bold; font-size: 13px; cursor: pointer; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; transition: background 0.2s, transform 0.1s; }
+.slide-btn:hover { background: rgba(0, 0, 0, 0.35); transform: translateY(-50%) scale(1.1); }
+.slide-btn.prev-btn { left: 4px; }
+.slide-btn.next-btn { right: 4px; }
+
+/* Modals with Glassmorphism */
+.modal { display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); }
+.modal-content { background-color: var(--bg-card); border: 1px solid var(--border-color); margin: 8% auto; padding: 32px; border-radius: 24px; width: 420px; color: var(--text-primary); box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3); position: relative; animation: modalSlideUp 0.3s ease-out; }
+@keyframes modalSlideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.close-modal { position: absolute; right: 24px; top: 24px; font-size: 24px; color: var(--text-secondary); cursor: pointer; }
+.close-modal:hover { color: #ff6b6b; }
+.modal-content h2 { font-size: 22px; font-weight: 700; margin-bottom: 24px; letter-spacing: -0.5px; }
+
+.color-picker { margin-bottom: 24px; }
+.color-picker label { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); margin-bottom: 12px; }
+.colors { display: flex; gap: 12px; }
+.color-opt { width: 32px; height: 32px; border-radius: 50%; cursor: pointer; border: 3px solid transparent; }
+.color-opt.active { border-color: #ffffff; }
+
+.modal-content input, .modal-content textarea { width: 100%; background: var(--bg-input); border: 1px solid var(--border-color); border-radius: 12px; padding: 14px; color: var(--text-primary); margin-bottom: 20px; box-sizing: border-box; font-family: inherit; font-size: 15px; outline: none; }
+.modal-footer { display: flex; justify-content: flex-end; }
+#save-event-btn { background: var(--accent-color); color: #1a1b1e; border: none; padding: 12px 32px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+
+/* Context Menu */
+.custom-context-menu { display: none; position: fixed; z-index: 2000; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 8px; min-width: 160px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); }
+.context-menu-item { padding: 8px 12px; font-size: 13px; font-weight: 500; color: var(--text-primary); cursor: pointer; border-radius: 6px; display: flex; align-items: center; gap: 8px; }
+.context-menu-item:hover { background-color: var(--bg-input); }
+.context-color-dots { display: flex; gap: 6px; padding: 6px 12px; border-top: 1px solid var(--border-color); margin-top: 4px; }
+.context-dot { width: 18px; height: 18px; border-radius: 50%; cursor: pointer; border: 1px solid rgba(255,255,255,0.2); }
+
+#event-list-container { list-style: none !important; padding: 0 !important; margin: 0 !important; max-height: 200px; overflow-y: auto; }
+
+/* Prompt Panel */
+#prompt-panel { background-color: var(--bg-input) !important; border: 1px solid var(--border-color) !important; border-radius: 14px !important; padding: 12px !important; box-shadow: 0 8px 24px var(--shadow) !important; display: flex; flex-direction: column; gap: 10px; width: 100%; margin-bottom: 10px; box-sizing: border-box; }
+#prompt-input { width: 100% !important; background-color: var(--bg-app) !important; border: 1px solid var(--border-color) !important; border-radius: 10px !important; padding: 12px 14px !important; font-size: 14px !important; color: var(--text-primary) !important; outline: none !important; box-sizing: border-box !important; }
+#submit-prompt { width: 100% !important; background: linear-gradient(135deg, var(--accent-color), #518ce6) !important; color: #1a1b1e !important; border: none !important; border-radius: 10px !important; padding: 10px !important; font-weight: 700 !important; cursor: pointer !important; box-sizing: border-box !important; }
+
+/* Pure CSS Search Design Bypass */
+.header-search-container { background-color: var(--bg-input) !important; border: 1px solid var(--border-color) !important; border-radius: 20px !important; padding: 2px 4px 2px 14px !important; display: flex !important; align-items: center !important; width: 200px !important; }
+#search-events { background: transparent !important; border: none !important; outline: none !important; padding: 6px 0 !important; color: var(--text-primary) !important; font-size: 13px !important; width: 100% !important; }
+
+/* Mobile Burger Trigger Button */
+.mobile-toggle-btn { display: none; position: fixed; bottom: 24px; right: 24px; z-index: 3000; background-color: var(--accent-color); color: #1a1b1e; border: none; padding: 14px 24px; border-radius: 30px; font-weight: 700; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); cursor: pointer; }
+
+/* Responsive Mobile Engine */
+@media screen and (max-width: 768px) {
+    .calendar-app { padding: 8px; gap: 0; flex-direction: column; }
+    .mobile-toggle-btn { display: block !important; }
+    .sidebar { position: fixed; top: 0; left: -300px; height: 100vh; width: 280px; z-index: 4000; border-radius: 0; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .sidebar.mobile-open { left: 0 !important; }
+    .sidebar-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); z-index: 3500; }
+    .sidebar-overlay.mobile-open { display: block !important; }
+    .main-calendar-header { padding: 12px; height: auto; flex-wrap: wrap; gap: 10px; justify-content: center; }
+    .calendar-navigation h2 { font-size: 16px; text-align: center; min-width: auto; }
+    .header-search-container { order: 3; width: 100% !important; }
+    .view-switcher { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); }
+    .view-switcher button { text-align: center; padding: 10px 0; }
+    .modal-content { width: 90% !important; margin: 20% auto; padding: 20px; }
+    .time-column { width: 55px; }
+    .calendar-main-grid { width: calc(100% - 55px); }
+    .event-item { padding: 6px 12px; font-size: 10px; }
+    .slide-btn { width: 22px; height: 22px; font-size: 14px; }
+}
+
+/* SETTINGS SIDEBAR DROPDOWN HOVER EFFECTS */
+.settings-dropdown-content div:hover {
+    background-color: rgba(255, 107, 107, 0.1) !important;
+}
