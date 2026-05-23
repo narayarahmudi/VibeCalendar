@@ -6,12 +6,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 1. UTAMAKAN: Suruh Express ngebaca folder public buat aset statis di Vercel! 🚀
+// 1. Jalur statis wajib Vercel biar CSS & JS premium lu gak blank putih lagi!
 app.use(express.static(path.join(__dirname, 'public')));
 
 const GOOGLE_API_KEY = process.env.GEMINI_API_KEY;
 
-// 2. FIX ROUTING HOME: Arahkan ke index.html yang udah lu pindahin ke folder public
+// 2. Arahkan landing home ke index.html di dalam folder public lu
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -33,7 +33,9 @@ app.post('/api/parse-prompt', (req, res) => {
     }
 });
 
-// INTERNATIONAL TIME & DATE PARSER ENGINE 🌐 (KODE LOGIKA ANDALAN LU TETEP DISINI)
+// ===================================================================
+// 🌐 INTERNATIONAL TIME & DATE PARSER ENGINE (100% ORI CADANGAN LU)
+// ===================================================================
 function parsePromptLogic(userPrompt) {
     const text = userPrompt.toLowerCase();
     const now = new Date(); 
