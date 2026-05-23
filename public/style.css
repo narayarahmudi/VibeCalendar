@@ -28,7 +28,7 @@ body, .sidebar, .main-content, .main-calendar-header, .time-column, .time-slot, 
 }
 
 body {
-    font-family: 'Inter', 'Segoe UI', system-ui, -apple-system, sans-serif;
+    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
     margin: 0; padding: 0;
     background-color: var(--bg-app);
     color: var(--text-primary);
@@ -101,7 +101,19 @@ body {
 .my-calendars-section label { display: flex; align-items: center; gap: 12px; padding: 6px 0; font-size: 14px; color: var(--text-primary); cursor: pointer; }
 
 .main-content { flex-grow: 1; display: flex; flex-direction: column; background-color: var(--bg-card); border-radius: 16px; overflow: hidden; box-shadow: 0 4px 12px var(--shadow); }
-.main-calendar-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 24px; background: var(--bg-header); border-bottom: 1px solid var(--border-color); }
+
+/* ===================================================================
+   💎 MAIN CALENDAR HEADER (NAVIGASI KIRI & GROUP KANAN SEJAJAR)
+   =================================================================== */
+.main-calendar-header { 
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important; 
+    padding: 16px 24px; 
+    background: var(--bg-header); 
+    border-bottom: 1px solid var(--border-color); 
+}
+
 .calendar-navigation { display: flex; align-items: center; gap: 12px; }
 .calendar-navigation h2 { font-size: 20px; font-weight: 600; margin: 0 8px; color: var(--text-primary); min-width: 150px; }
 .calendar-navigation button { background-color: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500; }
@@ -169,9 +181,82 @@ body {
 #prompt-input { width: 100% !important; background-color: var(--bg-app) !important; border: 1px solid var(--border-color) !important; border-radius: 10px !important; padding: 12px 14px !important; font-size: 14px !important; color: var(--text-primary) !important; outline: none !important; box-sizing: border-box !important; }
 #submit-prompt { width: 100% !important; background: linear-gradient(135deg, var(--accent-color), #518ce6) !important; color: #1a1b1e !important; border: none !important; border-radius: 10px !important; padding: 10px !important; font-weight: 700 !important; cursor: pointer !important; box-sizing: border-box !important; }
 
-/* Pure CSS Search Design Bypass */
-.header-search-container { background-color: var(--bg-input) !important; border: 1px solid var(--border-color) !important; border-radius: 20px !important; padding: 2px 4px 2px 14px !important; display: flex !important; align-items: center !important; width: 200px !important; }
-#search-events { background: transparent !important; border: none !important; outline: none !important; padding: 6px 0 !important; color: var(--text-primary) !important; font-size: 13px !important; width: 100% !important; }
+/* ===================================================================
+   🔍 PURE CSS SEARCH DESIGN BYPASS (NEMPEL DI KANAN SEBELUM VIEW SWITCHER)
+   =================================================================== */
+/* ===================================================================
+   🔍 PREMIUM SEARCH BAR DESIGN (FIX VERTICAL STACKING BUG)
+   =================================================================== */
+.header-search-container { 
+    background-color: var(--bg-input) !important; 
+    border: 1px solid var(--border-color) !important; 
+    border-radius: 20px !important; 
+    padding: 0 14px !important; 
+    display: flex !important; 
+    align-items: center !important; 
+    
+    /* 🛠️ UKURAN AWAL: Ramping pas idle/diemin biar nempel cakep */
+    width: 160px !important; 
+    max-width: 400px !important; /* Batas maksimal melar ke kiri */
+    height: 36px !important; 
+    box-sizing: border-box !important;
+
+    /* Posisi magnet: mengunci sisi kanan, biar pas melar otomatis dorong ruang ke kiri */
+    margin-left: auto !important; 
+    margin-right: 16px !important; 
+    
+    /* ANIMASI SAKTI: Mengatur durasi melar biar smooth kinetik gak patah-patah */
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+/* Efek pas disorot kursor */
+.header-search-container:hover {
+    border-color: var(--text-secondary) !important;
+}
+
+/* 🔥 EFEK MELAR AKTIF: Pas diklik, otomatis ngelebar ke kiri! */
+.header-search-container:focus-within {
+    width: 280px !important; /* <--- Ubah angka ini ke 300px atau lebih kalau mau makin lebar ke kiri */
+    border-color: var(--accent-color) !important; 
+    background-color: var(--bg-app) !important; 
+    box-shadow: 0 0 0 3px rgba(138, 180, 248, 0.15) !important; 
+}
+
+/* Wrapper daleman tetep flex lurus ke samping */
+.search-box-wrapper {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important; 
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Ikon kaca pembesar */
+.search-icon {
+    font-size: 13px !important;
+    display: flex !important;
+    align-items: center !important;
+    user-select: none !important;
+}
+
+/* Input teks asli lu */
+#search-events { 
+    background: transparent !important; 
+    border: none !important; 
+    outline: none !important; 
+    padding: 0 !important; 
+    margin: 0 !important;
+    color: var(--text-primary) !important; 
+    font-size: 13px !important; 
+    width: 100% !important; 
+    height: 100% !important;
+}
+
+#search-events::placeholder {
+    color: var(--text-secondary) !important;
+    opacity: 0.7;
+}
+
 
 /* Mobile Burger Trigger Button */
 .mobile-toggle-btn { display: none; position: fixed; bottom: 24px; right: 24px; z-index: 3000; background-color: var(--accent-color); color: #1a1b1e; border: none; padding: 14px 24px; border-radius: 30px; font-weight: 700; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); cursor: pointer; }
@@ -186,7 +271,7 @@ body {
     .sidebar-overlay.mobile-open { display: block !important; }
     .main-calendar-header { padding: 12px; height: auto; flex-wrap: wrap; gap: 10px; justify-content: center; }
     .calendar-navigation h2 { font-size: 16px; text-align: center; min-width: auto; }
-    .header-search-container { order: 3; width: 100% !important; }
+    .header-search-container { order: 3; width: 100% !important; max-width: 100% !important; margin-left: 0 !important; margin-right: 0 !important; }
     .view-switcher { width: 100%; display: grid; grid-template-columns: repeat(3, 1fr); }
     .view-switcher button { text-align: center; padding: 10px 0; }
     .modal-content { width: 90% !important; margin: 20% auto; padding: 20px; }
