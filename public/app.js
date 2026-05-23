@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const savedTheme = localStorage.getItem('theme') || 'dark';
     document.body.setAttribute('data-theme', savedTheme);
-    themeToggle.textContent = savedTheme === 'light' ? '☀️ Light Mode' : '🌙 Dark Mode';
+    themeToggle.textContent = savedTheme === 'light' ? 'Light Mode' : 'Dark Mode';
 
     function saveEvents() {
         localStorage.setItem('events', JSON.stringify(events));
@@ -189,7 +189,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentTheme = document.body.getAttribute('data-theme');
         const nextTheme = currentTheme === 'light' ? 'dark' : 'light';
         document.body.setAttribute('data-theme', nextTheme); localStorage.setItem('theme', nextTheme); 
-        themeToggle.textContent = nextTheme === 'light' ? '☀️ Light Mode' : '🌙 Dark Mode';
+        themeToggle.textContent = nextTheme === 'light' ? 'Light Mode' : 'Dark Mode';
     };
 
     colorOpts.forEach(opt => {
