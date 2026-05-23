@@ -28,7 +28,7 @@ body, .sidebar, .main-content, .main-calendar-header, .time-column, .time-slot, 
 }
 
 body {
-    font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+    font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
     margin: 0; padding: 0;
     background-color: var(--bg-app);
     color: var(--text-primary);
