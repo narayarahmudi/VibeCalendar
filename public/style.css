@@ -312,3 +312,71 @@ body {
     font-weight: 700;
     color: var(--accent-color); /* Pake warna biru neon khas lu */
 }
+
+/* ===================================================================
+   🎠 INTERACTIVE EVENT SLIDER CAROUSEL SYSTEM (FIX TOMBOL PANAH SLOT)
+   =================================================================== */
+/* Container utama di dalam slot jam */
+.event-slider-container {
+    position: relative !important;
+    width: 100% !important;
+    height: 100% !important;
+    overflow: hidden !important;
+    display: flex !important;
+    align-items: center !important;
+}
+
+/* Sembunyikan semua event secara default di dalam slider slot */
+.event-slider-container .event-item {
+    display: none !important;
+    width: 100% !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+}
+
+/* 🔥 SAKLAR SAKTI: Hanya tampilkan event yang punya kelas active-slide */
+.event-slider-container .event-item.active-slide {
+    display: block !important;
+    animation: slideFadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+/* Tombol navigasi panah mini (‹ dan ›) */
+.slide-btn {
+    position: absolute !important;
+    top: 50% !important;
+    transform: translateY(-50%) !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    color: #ffffff !important;
+    border: none !important;
+    border-radius: 50% !important;
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 10px !important;
+    cursor: pointer !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    opacity: 0 !important; /* Ngumpet dulu, baru muncul pas slot di-hover */
+    transition: opacity 0.2s ease, background 0.2s ease !important;
+    z-index: 10 !important;
+    user-select: none !important;
+}
+
+/* Munculkan tombol panah pas kursor masuk ke dalam slot jam */
+.time-slot:hover .slide-btn {
+    opacity: 1 !important;
+}
+
+.slide-btn:hover {
+    background: var(--accent-color) !important;
+    color: #000000 !important;
+}
+
+.prev-btn { left: 2px !important; }
+.next-btn { right: 2px !important; }
+
+/* Animasi transisi geser smooth pas tombol diklik */
+@keyframes slideFadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
