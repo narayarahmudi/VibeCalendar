@@ -6,12 +6,12 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// 1. Jalur statis wajib Vercel biar CSS & JS premium lu gak blank putih lagi!
+// Jalur statis wajib Vercel agar CSS & JS di folder public ter-load sempurna
 app.use(express.static(path.join(__dirname, 'public')));
 
 const GOOGLE_API_KEY = process.env.GEMINI_API_KEY;
 
-// 2. Arahkan landing home ke index.html di dalam folder public lu
+// Arahkan landing home ke index.html di dalam folder public lu
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -34,11 +34,15 @@ app.post('/api/parse-prompt', (req, res) => {
 });
 
 // ===================================================================
-// 🌐 INTERNATIONAL TIME & DATE PARSER ENGINE (100% ORI CADANGAN LU)
+// 🌐 INTERNATIONAL TIME & DATE PARSER ENGINE (ANTI TIMEZONE BUG VERCEL)
 // ===================================================================
 function parsePromptLogic(userPrompt) {
     const text = userPrompt.toLowerCase();
-    const now = new Date(); 
+    
+    // FIX TIMEZONE VERCEL: Paksa basis referensi "now" mengikuti Waktu Indonesia Barat (WIB / GMT+7)
+    const localTimeString = new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
+    const now = new Date(localTimeString);
+    
     let hour = null; 
     let color = '#8ab4f8';
     let year = now.getFullYear(); 
@@ -67,7 +71,7 @@ function parsePromptLogic(userPrompt) {
     const isRelative = text.includes('tomorrow') || text.includes('day after tomorrow') || daysLaterMatch;
 
     if (isRelative) {
-        const relativeDate = new Date();
+        const relativeDate = new Date(now.getTime()); // Kloning waktu lokal WIB
         if (text.includes('day after tomorrow')) {
             relativeDate.setDate(now.getDate() + 2);
         } else if (text.includes('tomorrow')) {
@@ -77,7 +81,6 @@ function parsePromptLogic(userPrompt) {
             relativeDate.setDate(now.getDate() + daysAmount);
         }
         month = relativeDate.getMonth();
-        if (text.includes('birthday')) { hour = 0; }
     }
 
     if (month === null) return null;
@@ -88,15 +91,15 @@ function parsePromptLogic(userPrompt) {
     const genericNumbers = text.match(/\b(\d{1,2})\b/g); 
 
     if (text.includes('day after tomorrow')) {
-        const lusa = new Date();
+        const lusa = new Date(now.getTime());
         lusa.setDate(now.getDate() + 2);
         dayNum = lusa.getDate();
     } else if (text.includes('tomorrow')) {
-        const tomorrow = new Date();
+        const tomorrow = new Date(now.getTime());
         tomorrow.setDate(now.getDate() + 1);
         dayNum = tomorrow.getDate();
     } else if (daysLaterMatch) {
-        const relativeDate = new Date();
+        const relativeDate = new Date(now.getTime());
         relativeDate.setDate(now.getDate() + parseInt(daysLaterMatch[1], 10));
         dayNum = relativeDate.getDate();
     } else if (dateMatch) {
@@ -111,7 +114,8 @@ function parsePromptLogic(userPrompt) {
     if (dayNum === null) return null;
 
     // 4. STRICT INTERNATIONAL TIME PARSER (AM/PM & 24H) ⏰
-    if (text.includes('midnight')) {
+    // FIX BUG BIRTHDAY AUTOMATIC MIDNIGHT 00:00
+    if (text.includes('birthday') || text.includes('ultah') || text.includes('midnight')) {
         hour = 0;
     } else {
         const timeMatch = text.match(/\b(\d{1,2})\s*(?:[.:](\d{2}))?\s*(am|pm)\b/i);
