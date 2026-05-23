@@ -259,12 +259,7 @@ body {
 
 
 /* Mobile Burger Trigger Button */
-.mobile-toggle-btn { display: none; position: fixed; bottom: 24px; right: 24px; z-index: 3000; background-color: var(--accent-color); color: #1a1b1e; border: none; padding: 14px 24px; border-radius: 30px; font-weight: 700; font-size: 14px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); cursor: pointer; }
-
-/* Responsive Mobile Engine (FIXED ANTI-NONGOL STANDBY COK!) */
-@media screen and (max-width: 768px) {
-    .calendar-app { padding: 8px; gap: 0; flex-direction: column; }
-    /* .mobile-toggle-btn { display: block !important; } */
+/* 🔥 FIX TOMBOL ADD EVENT MOBILE: BIAR JADI BULAT MINIMALIS ANTI-BEGAL LAYAR */
     .mobile-toggle-btn { 
         display: block !important; 
         position: fixed !important; 
@@ -289,6 +284,12 @@ body {
         box-shadow: 0 4px 16px rgba(0,0,0,0.5) !important; 
         cursor: pointer !important; 
     }
+
+/* Responsive Mobile Engine (FIXED ANTI-NONGOL STANDBY COK!) */
+@media screen and (max-width: 768px) {
+    .calendar-app { padding: 8px; gap: 0; flex-direction: column; }
+    .mobile-toggle-btn { display: block !important; }
+    
     
     /* 🛠️ Sembunyiin paksa lebih jauh keluar layar (-320px) biar gak ada sisa bayangan standby */
     /* 🛠️ Sembunyiin paksa lebih jauh keluar layar (-320px) biar gak ada sisa bayangan standby */
