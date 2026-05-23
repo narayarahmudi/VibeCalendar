@@ -5,7 +5,8 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static(__dirname));
+// FIX JALUR STATIS VERCEL: Pakai path.join biar CSS & JS ke-load sempurna di cloud! 🚀
+app.use(express.static(path.join(__dirname, './')));
 
 const GOOGLE_API_KEY = process.env.GEMINI_API_KEY;
 
