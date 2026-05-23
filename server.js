@@ -5,13 +5,15 @@ const app = express();
 
 app.use(cors());
 app.use(express.json());
-// FIX JALUR STATIS VERCEL: Pakai path.join biar CSS & JS ke-load sempurna di cloud! 🚀
-app.use(express.static(path.join(__dirname, './')));
+
+// 1. UTAMAKAN: Suruh Express ngebaca folder public buat aset statis di Vercel! 🚀
+app.use(express.static(path.join(__dirname, 'public')));
 
 const GOOGLE_API_KEY = process.env.GEMINI_API_KEY;
 
+// 2. FIX ROUTING HOME: Arahkan ke index.html yang udah lu pindahin ke folder public
 app.get('/', (req, res) => {
-    res.sendFile(path.resolve(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 app.post('/api/parse-prompt', (req, res) => {
@@ -31,7 +33,7 @@ app.post('/api/parse-prompt', (req, res) => {
     }
 });
 
-// INTERNATIONAL TIME & DATE PARSER ENGINE 🌐
+// INTERNATIONAL TIME & DATE PARSER ENGINE 🌐 (KODE LOGIKA ANDALAN LU TETEP DISINI)
 function parsePromptLogic(userPrompt) {
     const text = userPrompt.toLowerCase();
     const now = new Date(); 
@@ -110,7 +112,6 @@ function parsePromptLogic(userPrompt) {
     if (text.includes('midnight')) {
         hour = 0;
     } else {
-        // Detects: "at 7pm", "at 7 pm", "7pm", "7 am", "jam 14:00"
         const timeMatch = text.match(/\b(\d{1,2})\s*(?:[.:](\d{2}))?\s*(am|pm)\b/i);
         const strictAtMatch = text.match(/(?:at|jam|pukul)\s*(\d{1,2})\b/);
 
@@ -123,11 +124,9 @@ function parsePromptLogic(userPrompt) {
             
             hour = h;
         } else if (strictAtMatch) {
-            // Fallback for 24h military format like "at 14", "at 23"
             const h = parseInt(strictAtMatch[1], 10);
             if (h >= 0 && h <= 23) hour = h;
         } else {
-            // Raw 24h format match like "14:00" or "23.00"
             const militaryMatch = text.match(/\b(\d{2})[.:](\d{2})\b/);
             if (militaryMatch) {
                 const h = parseInt(militaryMatch[1], 10);
@@ -171,4 +170,4 @@ function parsePromptLogic(userPrompt) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 VibeCalendar Server Active! Open in your browser: http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`🚀 VibeCalendar Server Active on port ${PORT}`));
