@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedColor = '#8ab4f8';
     let clickedSlotData = null; 
     
-    // 🔥 INISIALISASI UTAMA: Ambil data dari key vibe_events
+    // 🧠 INISIALISASI UTAMA: Ambil data dari key vibe_events biar sinkron abadi
     let events = JSON.parse(localStorage.getItem('vibe_events')) || [];
     let currentView = window.innerWidth <= 768 ? 'day' : 'week';
     let searchQuery = '';
@@ -120,9 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.setAttribute('data-theme', savedTheme);
     themeToggle.textContent = savedTheme === 'light' ? 'Light Mode' : 'Dark Mode';
 
-    // 🔥 FIX FUNGSI LAMA: Kita arahkan semua ke saveEventsToStorage()
+    // 🔥 HOTFIX ACCURATE SAVE: Kunci ke key vibe_events tanpa ngerusak scope loop internal
     function saveEvents() {
-        saveEventsToStorage();
+        localStorage.setItem('vibe_events', JSON.stringify(events));
         renderEventsList();
     }
 
@@ -518,7 +518,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 };
                 
                 events.push(newEvent); 
-                saveEvents(); // 🔥 Ini otomatis nembak ke localStorage yang benar!
+                saveEvents(); 
 
                 currentDate = targetDate;
                 renderAll();
@@ -549,20 +549,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (settingsDropdown) settingsDropdown.style.display = 'none';
     });
 
-    // Eksekutor Hapus Akun Dashboard / Reset Session (FIXED & SYNCED!)
     if (resetAccountBtn) {
         resetAccountBtn.onclick = (e) => {
             e.stopPropagation();
             
             if (confirm("Are you sure you want to reset your account session? This will clear your current profile display.")) {
-                // 1. Sapu bersih session nama
                 localStorage.removeItem('promptcal_user');
-                
-                // 🔥 2. SAPU BERSIH JADWAL: Dari localstorage dan array memori internal
                 localStorage.removeItem('vibe_events');
                 events = []; 
                 
-                // Sembunyikan aplikasi, balikin ke welcome screen awal
                 mainAppLayout.style.display = 'none';
                 welcomeScreen.style.display = 'flex';
                 usernameInput.value = ''; 
@@ -577,7 +572,7 @@ document.addEventListener('DOMContentLoaded', () => {
     renderAll();
 });
 
-// 🔥 SAKLAR SAVING UTAMA: Dipanggil di semua state perubahan biar masuk ke key vibe_events
+// 🔥 SAKLAR SAVING UTAMA: Dipertahankan agar tidak memutus dependensi fungsi eksternal
 function saveEventsToStorage() {
     localStorage.setItem('vibe_events', JSON.stringify(events));
 }
