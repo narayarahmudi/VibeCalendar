@@ -58,13 +58,32 @@ document.addEventListener('DOMContentLoaded', () => {
     let activeContextMenuEvent = null; 
 
     // Check existing session
+    // 🔥 FIX REAL-TIME SINKRON: Otomatis tarik data cloud pas refresh halaman
     const savedName = localStorage.getItem('promptcal_user');
     if (savedName && userSecretCode) {
         welcomeScreen.style.display = 'none';
         displayUserName.textContent = savedName;
         displaySecretCode.textContent = userSecretCode;
         mainAppLayout.style.display = 'flex';
+        
+        // Render data lokal dulu biar cepet nampil
         initCalendar();
+
+        // Langsung culik data paling fresh dari Supabase di background
+        fetch('/api/cloud-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ secretCode: userSecretCode })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data && data.events) {
+                events = data.events;
+                localStorage.setItem('vibe_events', JSON.stringify(events));
+                renderAll(); // Render ulang pakai data awan paling mutakhir!
+            }
+        })
+        .catch(err => console.error('⚠️ Background sync on load failed:', err));
     }
 
     // 🔥 Background Auto-Backup Sync Worker
