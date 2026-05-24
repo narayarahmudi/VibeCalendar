@@ -44,7 +44,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentDate = new Date(); 
     let selectedColor = '#8ab4f8';
     let clickedSlotData = null; 
-    let events = JSON.parse(localStorage.getItem('events')) || [];
+    
+    // 🔥 INISIALISASI UTAMA: Ambil data dari key vibe_events
+    let events = JSON.parse(localStorage.getItem('vibe_events')) || [];
     let currentView = window.innerWidth <= 768 ? 'day' : 'week';
     let searchQuery = '';
     let activeContextMenuEvent = null; 
@@ -98,7 +100,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if(sidebarOverlay) sidebarOverlay.onclick = toggleMobileSidebar;
 
     // Custom Context Menu Creation
-    // Custom Context Menu Creation (Ganti bagian ini dengan yang baru, Dav)
     const contextMenu = document.createElement('div');
     contextMenu.className = 'custom-context-menu';
     contextMenu.innerHTML = `
@@ -119,8 +120,9 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.setAttribute('data-theme', savedTheme);
     themeToggle.textContent = savedTheme === 'light' ? 'Light Mode' : 'Dark Mode';
 
+    // 🔥 FIX FUNGSI LAMA: Kita arahkan semua ke saveEventsToStorage()
     function saveEvents() {
-        localStorage.setItem('events', JSON.stringify(events));
+        saveEventsToStorage();
         renderEventsList();
     }
 
@@ -289,7 +291,6 @@ document.addEventListener('DOMContentLoaded', () => {
                             e.stopPropagation(); 
                             detailTitle.textContent = evt.title; 
                             
-                            // 🔥 TEMBAKKAN DATA DETAILS KE MODALNYA KALO ADA
                             const detailNotesText = document.getElementById('detail-notes');
                             if (detailNotesText) {
                                 detailNotesText.textContent = evt.details || 'No additional details.';
@@ -350,9 +351,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     saveEventBtn.onclick = () => {
         const title = eventTitleInput.value.trim();
-        const details = document.getElementById('event-details').value.trim(); // 🔥 Ambil isi textarea
+        const details = document.getElementById('event-details').value.trim(); 
         if (title && clickedSlotData) {
-            // 🔥 Selipkan data 'details' ke dalam objek eventData
             const eventData = { title, details: details || 'No additional details.', color: selectedColor, completed: false, timestamp: clickedSlotData.timestamp };
             events.push(eventData); saveEvents(); renderAll();
             eventTitleInput.value = ''; document.getElementById('event-details').value = ''; eventModal.style.display = 'none';
@@ -402,18 +402,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         let uncompletedCount = 0;
         let stressWeight = 0;
-        let purpleBonusPoints = 0; // Wadah penyimpan bonus kebahagiaan
+        let purpleBonusPoints = 0; 
 
         weeklyEvents.forEach(e => {
             if (e.completed) return; 
             uncompletedCount++;
-            if (e.color === '#f28b82') stressWeight += 25;      // Merah ngurangin 25%
-            else if (e.color === '#f7cb4d') stressWeight += 15; // Kuning ngurangin 15%
-            else if (e.color === '#bb86fc') purpleBonusPoints += 15; // 🔥 UNGU MENAMBAH +15% VIBE!
-            else stressWeight += 8;                             // Biru/Hijau cuma 8%
+            if (e.color === '#f28b82') stressWeight += 25;      
+            else if (e.color === '#f7cb4d') stressWeight += 15; 
+            else if (e.color === '#bb86fc') purpleBonusPoints += 15; 
+            else stressWeight += 8;                             
         });
 
-        // Hitung skor akhir dan kombinasikan dengan bonus ungu (Maksimal 100%)
         let goodVibePercentage = 100;
         if (uncompletedCount > 0) {
             let baseVibe = 100 - stressWeight;
@@ -422,7 +421,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         vibePercentText.textContent = `${goodVibePercentage}%`;
         
-        // Update warna ring visual secara adaptif
         if (goodVibePercentage >= 75) {
             vibeStatusText.textContent = "Chill & Productive";
             vibeStatusText.style.color = "#81c995";
@@ -492,42 +490,35 @@ document.addEventListener('DOMContentLoaded', () => {
                 const targetDate = new Date(year, month - 1, day);
                 targetDate.setHours(aiResult.hour, 0, 0, 0);
 
-                // 🔥 LOGIC DETEKSI WARNA OTOMATIS BERDASARKAN KEYWORD PROMPT USER
                 const lowerPrompt = promptText.toLowerCase();
-                let finalColor = aiResult.color || '#8ab4f8'; // Default biru kalau AI bimbang
+                let finalColor = aiResult.color || '#8ab4f8'; 
 
-                // 1. Cek Vibe Merah (Stres/Berat)
                 if (/exam|deadline|test|urgent|heavy|hard|ujian|tugas|penting|parah|susah/.test(lowerPrompt)) {
                     finalColor = '#f28b82';
                 } 
-                // 2. Cek Vibe Kuning (Medium)
                 else if (/meeting|review|homework|study|project|rapat|belajar|kerjaan|pr/.test(lowerPrompt)) {
                     finalColor = '#f7cb4d';
                 } 
-                // 3. Cek Vibe Ungu (🔮 HAPPY REWARD +15%)
                 else if (/game|gacha|genshin|birthday|healing|party|main|ultah|pesta|libur|hepi/.test(lowerPrompt)) {
                     finalColor = '#bb86fc';
                 } 
-                // 4. Cek Vibe Hijau (Cozy/Relax)
                 else if (/sleep|relax|chill|rest|movie|dinner|santai|tidur|istirahat|nonton|makan/.test(lowerPrompt)) {
                     finalColor = '#81c995';
                 }
-                // 5. Cek Vibe Biru (Routine)
                 else if (/routine|class|lecture|workout|gym|kuliah|sekolah|olahraga|biasa/.test(lowerPrompt)) {
                     finalColor = '#8ab4f8';
                 }
 
-                // Masukkan data event baru dengan warna 'finalColor' yang sudah dipetakan
                 const newEvent = { 
                     title: aiResult.title, 
-                    color: finalColor, // <--- Warna pintar terpasang!
+                    color: finalColor, 
                     completed: false, 
                     timestamp: targetDate.getTime(),
                     details: aiResult.details || "Generated via Intelligent Prompt."
                 };
                 
                 events.push(newEvent); 
-                saveEvents();
+                saveEvents(); // 🔥 Ini otomatis nembak ke localStorage yang benar!
 
                 currentDate = targetDate;
                 renderAll();
@@ -547,7 +538,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const settingsDropdown = document.getElementById('settings-dropdown');
     const resetAccountBtn = document.getElementById('reset-account-btn');
 
-    // Buka tutup menu settings mini
     if (settingsToggleBtn && settingsDropdown) {
         settingsToggleBtn.onclick = (e) => {
             e.stopPropagation();
@@ -555,31 +545,39 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     }
 
-    // Klik di luar buat nutup dropdown otomatis
     document.addEventListener('click', () => {
         if (settingsDropdown) settingsDropdown.style.display = 'none';
     });
 
-    // Eksekutor Hapus Akun Dashboard / Reset Session
+    // Eksekutor Hapus Akun Dashboard / Reset Session (FIXED & SYNCED!)
     if (resetAccountBtn) {
         resetAccountBtn.onclick = (e) => {
             e.stopPropagation();
             
-            // Konfirmasi standar internasional
             if (confirm("Are you sure you want to reset your account session? This will clear your current profile display.")) {
-                // Sapu bersih session nama
+                // 1. Sapu bersih session nama
                 localStorage.removeItem('promptcal_user');
+                
+                // 🔥 2. SAPU BERSIH JADWAL: Dari localstorage dan array memori internal
+                localStorage.removeItem('vibe_events');
+                events = []; 
                 
                 // Sembunyikan aplikasi, balikin ke welcome screen awal
                 mainAppLayout.style.display = 'none';
                 welcomeScreen.style.display = 'flex';
-                usernameInput.value = ''; // Kosongkan inputan
+                usernameInput.value = ''; 
                 
                 if (settingsDropdown) settingsDropdown.style.display = 'none';
+                
+                renderAll(); 
             }
         };
     }
 
-    // Render data kalender pertama kali
     renderAll();
 });
+
+// 🔥 SAKLAR SAVING UTAMA: Dipanggil di semua state perubahan biar masuk ke key vibe_events
+function saveEventsToStorage() {
+    localStorage.setItem('vibe_events', JSON.stringify(events));
+}
