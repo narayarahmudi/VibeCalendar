@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const { createClient } = require('@supabase/supabase-js'); // 🔥 Import SDK Supabase
 const app = express();
 
 app.use(cors());
@@ -10,6 +11,25 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const GOOGLE_API_KEY = process.env.GEMINI_API_KEY;
+
+// ===================================================================
+// ☁️ INITIALIZATION SUPABASE DATABASE CLOUD 
+// ===================================================================
+const SUPABASE_URL = 'https://ngnwofzzvrxieihrsaxg.supabase.co';
+// ⚠️ GANTI teks di bawah ini pake anon/public API key rahasia lu yang dari tab API Settings!
+const SUPABASE_KEY = 'sb_publishable_TMoW35OUl1BzpYvTM9gv8A_KEvfK-6m'; 
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// Fungsi pembantu buat bikin kode rahasia acak unik (Contoh hasil: VIBE-A72K)
+function generateSecretCode() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // Hilangkan huruf mirip angka (I, O, 0, 1)
+    let code = '';
+    for (let i = 0; i < 4; i++) {
+        code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return `VIBE-${code}`;
+}
 
 // Arahkan landing home ke index.html di dalam folder public lu
 app.get('/', (req, res) => {
@@ -34,12 +54,78 @@ app.post('/api/parse-prompt', (req, res) => {
 });
 
 // ===================================================================
+// 📑 ENDPOINTS API BARU: RITUAL SINKRONISASI KODE RAHASIA BROWSER
+// ===================================================================
+
+// 🛠️ 1. USER BARU: DAFTAR NAMA & COCOKKAN KODE BARU KELUAR
+app.post('/api/cloud-register', async (req, res) => {
+    const { username } = req.body;
+    if (!username) return res.status(400).json({ error: 'Username required' });
+
+    try {
+        const secretCode = generateSecretCode();
+        
+        // Taruh baris baru ke dalam tabel user_calendars di Supabase
+        const { error } = await supabase
+            .from('user_calendars')
+            .insert([{ secret_code: secretCode, username: username, events_data: [] }]);
+
+        if (error) throw error;
+
+        // Balas ke frontend bawa tokennya
+        res.json({ secretCode, username, events: [] });
+    } catch (err) {
+        res.status(500).json({ error: 'Database error: ' + err.message });
+    }
+});
+
+// 🛠️ 2. USER LAMA: RESTORE DATA DARI PERANGKAT LAIN PAKE KODE
+app.post('/api/cloud-login', async (req, res) => {
+    const { secretCode } = req.body;
+    if (!secretCode) return res.status(400).json({ error: 'Secret code required' });
+
+    try {
+        const { data, error } = await supabase
+            .from('user_calendars')
+            .select('username, events_data')
+            .eq('secret_code', secretCode.trim().toUpperCase())
+            .single();
+
+        if (error || !data) {
+            return res.status(404).json({ error: 'Secret code not found or invalid!' });
+        }
+
+        // Oper balik nama asli dan array agendanya biar dirender frontend
+        res.json({ secretCode, username: data.username, events: data.events_data });
+    } catch (err) {
+        res.status(500).json({ error: 'Database error: ' + err.message });
+    }
+});
+
+// 🛠️ 3. BACKGROUND WORKER: AUTO SAVE TIAP ADA AGENDA BERUBAH
+app.post('/api/cloud-sync', async (req, res) => {
+    const { secretCode, events } = req.body;
+    if (!secretCode) return res.status(400).json({ error: 'Secret code missing' });
+
+    try {
+        const { error } = await supabase
+            .from('user_calendars')
+            .update({ events_data: events })
+            .eq('secret_code', secretCode.trim().toUpperCase());
+
+        if (error) throw error;
+        res.json({ success: true });
+    } catch (err) {
+        res.status(500).json({ error: 'Cloud backup sync failed: ' + err.message });
+    }
+});
+
+// ===================================================================
 // 🌐 INTERNATIONAL TIME & DATE PARSER ENGINE (ANTI TIMEZONE BUG VERCEL)
 // ===================================================================
 function parsePromptLogic(userPrompt) {
     const text = userPrompt.toLowerCase();
     
-    // FIX TIMEZONE VERCEL: Paksa basis referensi "now" mengikuti Waktu Indonesia Barat (WIB / GMT+7)
     const localTimeString = new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" });
     const now = new Date(localTimeString);
     
@@ -47,11 +133,9 @@ function parsePromptLogic(userPrompt) {
     let color = '#8ab4f8';
     let year = now.getFullYear(); 
 
-    // 1. Parse Year
     const yearMatch = text.match(/\b(202\d|203\d)\b/);
     if (yearMatch) year = parseInt(yearMatch[1], 10);
 
-    // 2. Parse Month (English Only)
     let month = null; 
     const monthsList = [
         ['january', 'jan'], ['february', 'feb'], ['march', 'mar'], 
@@ -66,12 +150,11 @@ function parsePromptLogic(userPrompt) {
         });
     });
 
-    // Parse relative indicators
     const daysLaterMatch = text.match(/(\d+)\s*days?\s*later/);
     const isRelative = text.includes('tomorrow') || text.includes('day after tomorrow') || daysLaterMatch;
 
     if (isRelative) {
-        const relativeDate = new Date(now.getTime()); // Kloning waktu lokal WIB
+        const relativeDate = new Date(now.getTime()); 
         if (text.includes('day after tomorrow')) {
             relativeDate.setDate(now.getDate() + 2);
         } else if (text.includes('tomorrow')) {
@@ -85,7 +168,6 @@ function parsePromptLogic(userPrompt) {
 
     if (month === null) return null;
 
-    // 3. Parse Day Number
     let dayNum = null;
     const dateMatch = text.match(/(?:date|tgl|\bon\b)\s*(\d{1,2})/); 
     const genericNumbers = text.match(/\b(\d{1,2})\b/g); 
@@ -113,8 +195,6 @@ function parsePromptLogic(userPrompt) {
 
     if (dayNum === null) return null;
 
-    // 4. STRICT INTERNATIONAL TIME PARSER (AM/PM & 24H) ⏰
-    // FIX BUG BIRTHDAY AUTOMATIC MIDNIGHT 00:00
     if (text.includes('birthday') || text.includes('ultah') || text.includes('midnight')) {
         hour = 0;
     } else {
@@ -143,7 +223,6 @@ function parsePromptLogic(userPrompt) {
 
     if (hour === null) return null;
 
-    // 5. STYLISH ENGLISH CLEAN TITLE FILTER
     let cleanTitle = userPrompt
         .replace(/\b\d+\s*days?\s*later\b/gi, '') 
         .replace(/(?:jam|pukul|at)\s*\d{1,2}(?:[.:]\d{2})?\s*(?:pm|am)?/gi, '') 
@@ -158,7 +237,6 @@ function parsePromptLogic(userPrompt) {
 
     let title = cleanTitle ? cleanTitle.charAt(0).toUpperCase() + cleanTitle.slice(1) : "New Event";
 
-    // Auto-Color Coding
     if (text.includes('birthday')) color = '#f28b82'; 
     else if (text.includes('dinner') || text.includes('lunch') || text.includes('food')) color = '#f7cb4d'; 
     else if (text.includes('gym') || text.includes('sport') || text.includes('football') || text.includes('handball')) color = '#81c995'; 

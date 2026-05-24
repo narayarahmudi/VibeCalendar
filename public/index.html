@@ -18,6 +18,15 @@
             <p>Please enter your name to personalize your dashboard</p>
             <input type="text" id="username-input" placeholder="Your full name..." autocomplete="off">
             <button id="login-btn">Get Started</button>
+            
+            <div style="margin: 20px 0 16px 0; display: flex; align-items: center; justify-content: center; gap: 10px; opacity: 0.5;">
+                <hr style="flex-grow: 1; border: none; border-top: 1px solid var(--border-color);">
+                <span style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Or Recovery</span>
+                <hr style="flex-grow: 1; border: none; border-top: 1px solid var(--border-color);">
+            </div>
+
+            <input type="text" id="secret-code-input" placeholder="🔑 Enter Secret Code (e.g. VIBE-A72K)" style="margin-bottom: 12px; text-transform: uppercase;">
+            <button id="cloud-login-btn" style="width: 100%; background: var(--bg-input); color: var(--text-primary); border: 1px solid var(--border-color); padding: 14px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; transition: background 0.2s;">Load My Cloud Calendar</button>
         </div>
     </div>
 
@@ -29,7 +38,7 @@
             <div class="configure-border-2">  
                 <div class="configure-core"></div>
             </div>
-            <p class="loading-text">Setting up your secure dashboard...</p>
+            <p class="loading-text" id="loading-text-display">Setting up your secure dashboard...</p>
         </div>
     </div>
 
@@ -181,6 +190,11 @@
                 <ul id="event-list-container"></ul>
             </div>
             
+            <div id="cloud-info-box" style="background: var(--bg-input); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 12px; font-size: 12px; text-align: center;">
+                <div style="color: var(--text-secondary); font-size: 11px; margin-bottom: 4px; font-weight: 600;">🔐 CLOUD SECRET CODE:</div>
+                <strong id="display-secret-code" style="color: var(--accent-color); font-family: monospace; font-size: 14px; letter-spacing: 0.5px;">VIBE-NONE</strong>
+            </div>
+
             <div class="theme-toggle-container">
                 <button id="theme-toggle">Dark Mode</button>
             </div>

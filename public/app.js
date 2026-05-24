@@ -7,6 +7,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainAppLayout = document.getElementById('main-app-layout');
     const displayUserName = document.getElementById('display-user-name');
 
+    // 🔥 Tambahan Element Cloud Recovery
+    const secretCodeInput = document.getElementById('secret-code-input');
+    const cloudLoginBtn = document.getElementById('cloud-login-btn');
+    const displaySecretCode = document.getElementById('display-secret-code');
+
     // Calendar Core Elements
     const miniCalendarGrid = document.getElementById('mini-calendar');
     const mainCalendarGrid = document.getElementById('calendar-main-grid');
@@ -45,7 +50,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let selectedColor = '#8ab4f8';
     let clickedSlotData = null; 
     
-    // 🧠 INISIALISASI UTAMA: Ambil data dari key vibe_events biar sinkron abadi
+    // 🧠 STATE CLOUD INTEGRATION (Membaca session cloud)
+    let userSecretCode = localStorage.getItem('vibe_secret_code') || null;
     let events = JSON.parse(localStorage.getItem('vibe_events')) || [];
     let currentView = window.innerWidth <= 768 ? 'day' : 'week';
     let searchQuery = '';
@@ -53,33 +59,114 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check existing session
     const savedName = localStorage.getItem('promptcal_user');
-    if (savedName) {
+    if (savedName && userSecretCode) {
         welcomeScreen.style.display = 'none';
         displayUserName.textContent = savedName;
+        displaySecretCode.textContent = userSecretCode;
         mainAppLayout.style.display = 'flex';
         initCalendar();
     }
 
-    // Login Triggers with Animasi Loading Kinetik
-    function handleLogin() {
+    // 🔥 Background Auto-Backup Sync Worker
+    async function triggerCloudSync() {
+        if (!userSecretCode) return;
+        try {
+            await fetch('/api/cloud-sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ secretCode: userSecretCode, events: events })
+            });
+        } catch (err) {
+            console.error('⚠️ Cloud Sync failed:', err);
+        }
+    }
+
+    // 🔥 RE-ENGINEERING LOGIN: Register Nama + Buat Token Cloud Baru
+    async function handleLogin() {
         const name = usernameInput.value.trim();
         if (!name) { alert("Please enter your name first!"); return; }
         
-        localStorage.setItem('promptcal_user', name);
-        displayUserName.textContent = name;
         welcomeScreen.style.display = 'none';
-        
-        // Munculkan layar loading premium selama 1.8 detik
         loadingScreen.style.display = 'flex';
-        setTimeout(() => {
+
+        try {
+            const res = await fetch('/api/cloud-register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: name })
+            });
+            const data = await res.json();
+
+            if (data.error) throw new Error(data.error);
+
+            userSecretCode = data.secretCode;
+            localStorage.setItem('promptcal_user', name);
+            localStorage.setItem('vibe_secret_code', userSecretCode);
+            localStorage.setItem('vibe_events', JSON.stringify([]));
+            events = [];
+
+            displayUserName.textContent = name;
+            displaySecretCode.textContent = userSecretCode;
+
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                mainAppLayout.style.display = 'flex';
+                initCalendar();
+            }, 1200);
+
+        } catch (err) {
             loadingScreen.style.display = 'none';
-            mainAppLayout.style.display = 'flex';
-            initCalendar();
-        }, 1800);
+            welcomeScreen.style.display = 'flex';
+            alert("❌ Fail to register cloud session: " + err.message);
+        }
+    }
+
+    // 🔥 LOGIN FITUR 1: Restore Data via Secret Code Recovery
+    async function handleCloudLogin() {
+        const code = secretCodeInput.value.trim().toUpperCase();
+        if (!code) { alert("Please enter your recovery secret code first!"); return; }
+
+        welcomeScreen.style.display = 'none';
+        loadingScreen.style.display = 'flex';
+
+        try {
+            const res = await fetch('/api/cloud-login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ secretCode: code })
+            });
+            const data = await res.json();
+
+            if (data.error) throw new Error(data.error);
+
+            userSecretCode = data.secretCode;
+            events = data.events;
+
+            localStorage.setItem('promptcal_user', data.username);
+            localStorage.setItem('vibe_secret_code', userSecretCode);
+            localStorage.setItem('vibe_events', JSON.stringify(events));
+
+            displayUserName.textContent = data.username;
+            displaySecretCode.textContent = userSecretCode;
+
+            setTimeout(() => {
+                loadingScreen.style.display = 'none';
+                mainAppLayout.style.display = 'flex';
+                initCalendar();
+            }, 1200);
+
+        } catch (err) {
+            loadingScreen.style.display = 'none';
+            welcomeScreen.style.display = 'flex';
+            alert("❌ Recovery Failed: " + err.message);
+        }
     }
 
     loginBtn.onclick = handleLogin;
     usernameInput.onkeydown = (e) => { if (e.key === 'Enter') handleLogin(); };
+    
+    if (cloudLoginBtn) cloudLoginBtn.onclick = handleCloudLogin;
+    if (secretCodeInput) secretCodeInput.onkeydown = (e) => { if (e.key === 'Enter') handleCloudLogin(); };
 
     function initCalendar() {
         if(window.innerWidth <= 768) {
@@ -91,7 +178,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderAll();
     }
 
-    // Toggle Mobile Sidebar Laci Panel
     function toggleMobileSidebar() {
         sidebarPanel.classList.toggle('mobile-open');
         sidebarOverlay.classList.toggle('mobile-open');
@@ -99,7 +185,6 @@ document.addEventListener('DOMContentLoaded', () => {
     if(mobileToggleBtn) mobileToggleBtn.onclick = toggleMobileSidebar;
     if(sidebarOverlay) sidebarOverlay.onclick = toggleMobileSidebar;
 
-    // Custom Context Menu Creation
     const contextMenu = document.createElement('div');
     contextMenu.className = 'custom-context-menu';
     contextMenu.innerHTML = `
@@ -120,10 +205,11 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.setAttribute('data-theme', savedTheme);
     themeToggle.textContent = savedTheme === 'light' ? 'Light Mode' : 'Dark Mode';
 
-    // 🔥 HOTFIX ACCURATE SAVE: Kunci ke key vibe_events tanpa ngerusak scope loop internal
+    // 🔥 SINKRONISASI ASLI LU: Save lokal + push cloud backup otomatis!
     function saveEvents() {
         localStorage.setItem('vibe_events', JSON.stringify(events));
         renderEventsList();
+        triggerCloudSync(); 
     }
 
     function renderEventsList() {
@@ -364,9 +450,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { grid.style.transform = 'translateX(0)'; grid.style.opacity = '1'; }, 150);
     }
 
-    // ===================================================================
-    // 🎯 SMART VIBE CHECK / MOOD ANALYTICS ENGINE (BALANCED & FIXED)
-    // ===================================================================
     function updateVibeAnalytics() {
         const vibeRing = document.querySelector('.vibe-progress-ring');
         const vibePercentText = document.getElementById('vibe-percentage');
@@ -465,7 +548,6 @@ document.addEventListener('DOMContentLoaded', () => {
         renderAll();
     };
 
-    // SECURE ABSOLUTE ENDPOINT FETCH
     submitPromptBtn.onclick = () => {
         const promptText = promptInput.value.trim();
         if (!promptText) return;
@@ -531,9 +613,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // ===================================================================
-    // ⚙️ SETTINGS DROPDOWN & SESSION RESET CONTROLLER
-    // ===================================================================
     const settingsToggleBtn = document.getElementById('settings-toggle-btn');
     const settingsDropdown = document.getElementById('settings-dropdown');
     const resetAccountBtn = document.getElementById('reset-account-btn');
@@ -555,8 +634,10 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (confirm("Are you sure you want to reset your account session? This will clear your current profile display.")) {
                 localStorage.removeItem('promptcal_user');
+                localStorage.removeItem('vibe_secret_code'); // 🔥 Clear token cloud lokal
                 localStorage.removeItem('vibe_events');
                 events = []; 
+                userSecretCode = null;
                 
                 mainAppLayout.style.display = 'none';
                 welcomeScreen.style.display = 'flex';
