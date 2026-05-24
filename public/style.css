@@ -84,7 +84,42 @@ body {
 
 /* App Structure & Grids */
 .calendar-app { display: flex; width: 100%; height: 100%; padding: 16px; box-sizing: border-box; gap: 16px; }
-.sidebar { width: 280px; padding: 20px; background-color: var(--bg-card); border-radius: 16px; display: flex; flex-direction: column; gap: 20px; box-shadow: 0 4px 12px var(--shadow); flex-shrink: 0; }
+.sidebar { 
+    width: 280px; 
+    padding: 20px; 
+    background-color: var(--bg-card); 
+    border-radius: 16px; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 20px; 
+    box-shadow: 0 4px 12px var(--shadow); 
+    flex-shrink: 0; 
+    
+    /* 🔥 SAKLAR SAKTI SCROLL DESKTOP: Biar pas di-zoom gak tenggelam cok! */
+    overflow-y: auto; 
+    max-height: 100vh; /* Kunci tinggi maksimal se-layar monitor */
+    box-sizing: border-box;
+}
+
+/* ===================================================================
+   💎 PREMIUM MINIMALIST SCROLLBAR FOR SIDEBAR (BIAR GAK MERUSAK PEMANDANGAN)
+   =================================================================== */
+.sidebar::-webkit-scrollbar {
+    width: 6px; /* Bikin scrollbarnya tipis bener biar estetik */
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: transparent; /* Latar belakang scrollbar transparan */
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.1); /* Warna batang scroll abu-abu gelap transparan */
+    border-radius: 10px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color); /* Pas di-hover, dia bakal nyala warna biru/accent khas lu! */
+}
 .create-event-button { background: linear-gradient(135deg, var(--accent-color), #518ce6); color: #1a1b1e; border: none; padding: 14px 28px; border-radius: 12px; font-size: 15px; font-weight: 600; cursor: pointer; box-shadow: 0 4px 12px rgba(138, 180, 248, 0.2); transition: transform 0.2s, opacity 0.2s; width: 100%; }
 [data-theme="light"] .create-event-button { color: #ffffff; }
 .create-event-button:hover { transform: translateY(-1px); opacity: 0.9; }
